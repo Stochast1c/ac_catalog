@@ -1,0 +1,14 @@
+ACNL Checklist, although it can be easily modified for other games if the information is setup correctly
+
+At its core it expects a dictionary of each item list (accessories, hats, shoes, etc.) that is setup by categories that those items can have (name, price, obtained from) as the keys and the values are a list of all the items in the item list.  
+
+The checklist itself organizes all the items and their respective categories along with the unique values within those categories (from redd, labelle, nooks, etc) into a tree list for easy-ish navigation.  Clicking on any item in the tree outside of the unique categories will list all the items in the item list.  Clicking on the unique category will show only those items that have that specific value.  
+
+Red items are items that cannot be reordered.  Checking an item will automatically save it once another item in the tree is clicked or the program is exited.
+
+Required python libraries:
+   wxpython
+   numpy
+   glob
+   requests (if you want to get an updated item list)
+   readcol  (if you want to get an updated item list)
