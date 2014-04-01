@@ -4,6 +4,7 @@ import string
 import codecs
 
 def get_items():
+   csv_path = "csvs\\"
    url = "http://moridb.com/items/"
    categories = ["hats", "accessories", "tops", "bottoms", "dresses", "socks", "shoes", "umbrellas", "furniture", "wallpaper", "flooring", "music", "bugs", "fish", "fossils", "art", "trees", "fruit", "flowers", "mushrooms", "seashells", "ore", "gyroids", "tools", "balloons", "stationery"]
    #categories = ["furniture"]  #TESTING
@@ -30,7 +31,7 @@ def get_items():
          key_list[cat] = ["name","Obtained From","Sells For","Purchase Price","reorderable"]
       key_list[cat].append("cataloged")   
          
-      output = codecs.open(cat+".csv","w",'utf-8')      #since repeated callings is slow, requires internet, and it locks you out if you make repeated calls
+      output = codecs.open(csv_path+cat+".csv","w",'utf-8')      #since repeated callings is slow, requires internet, and it locks you out if you make repeated calls
       
       for item_cat in sorted(key_list[cat]):
          output.write(item_cat)

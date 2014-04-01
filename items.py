@@ -6,7 +6,10 @@ import glob
 import pickle
 
 def items():
-   files = glob.glob("*.csv")
+   csv_path = "csvs\\"
+   pickle_path = "pickles\\"
+
+   files = glob.glob(csv_path+"*.csv")
    for f in files:
       dict = readcol(f,asdict=True,fsep="`")
       dict.pop("\n", None)    #for some reason readcol grabs the newline character
@@ -20,7 +23,7 @@ def items():
             if unique_dict[k] == ['-']:      #if the only value is -, then that is not something useful to sort by
                unique_dict.pop(k, None)      
          
-      with open(f[:-3]+"pickle", 'wb') as handle:
+      with open(pickle_path+f[:-3]+"pickle", 'wb') as handle:
          pickle.dump((collections.OrderedDict(sorted(dict.items())), collections.OrderedDict(sorted(unique_dict.items()))), handle)     #depositing dict by pickle, lazy and this is fast
    
    #return collections.OrderedDict(sorted(dict.items())), collections.OrderedDict(sorted(unique_dict.items()))

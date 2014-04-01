@@ -14,8 +14,11 @@ import ast
 import glob
 
 ########################################################################
-files = glob.glob("*.pickle")
-filenames = [f.replace('.pickle','') for f in files]     #get rid of .pickle
+pickle_path = "pickles\\"  #windows only, sorry I like organization
+
+files = glob.glob(pickle_path+"*.pickle")
+filenames = [f.replace(pickle_path,'') for f in files]     #get rid of .pickle
+filenames = [f.replace('.pickle','') for f in filenames]     #get rid of .pickle
 
 class MyTree(wx.TreeCtrl):
    """Our customized TreeCtrl class
@@ -28,7 +31,7 @@ class MyTree(wx.TreeCtrl):
       node = {}
       category = {}
       for f in filenames:
-         with open(f+".pickle", 'rb') as handle:
+         with open(pickle_path+f+".pickle", 'rb') as handle:
             dict, unique_dict = pickle.loads(handle.read())
          node[f] = self.AppendItem(root, f)
          for k,values in unique_dict.iteritems():
@@ -119,7 +122,7 @@ class MyFrame(wx.Frame):
          if p in filenames:
             self.item_list = p
             
-      with open(self.item_list+".pickle", 'rb') as handle:
+      with open(pickle_path+self.item_list+".pickle", 'rb') as handle:
          self.dict, self.unique_dict = pickle.loads(handle.read())
             
       for p in pieces:        
@@ -193,7 +196,7 @@ class MyFrame(wx.Frame):
          
    def saveDict(self):
       if self.item_list != "":      #to stop it trying to save when first running program
-         with open(self.item_list+".pickle", 'wb') as handle:
+         with open(pickle_path+self.item_list+".pickle", 'wb') as handle:
             pickle.dump((self.dict,self.unique_dict), handle)     #depositing dict by pickle, lazy and this is fast
 
 
