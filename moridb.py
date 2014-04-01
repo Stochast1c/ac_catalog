@@ -2,9 +2,10 @@ import requests
 import collections
 import string
 import codecs
+import os
 
 def get_items():
-   csv_path = "csvs\\"
+   csv_path = "csvs"+os.sep
    url = "http://moridb.com/items/"
    categories = ["hats", "accessories", "tops", "bottoms", "dresses", "socks", "shoes", "umbrellas", "furniture", "wallpaper", "flooring", "music", "bugs", "fish", "fossils", "art", "trees", "fruit", "flowers", "mushrooms", "seashells", "ore", "gyroids", "tools", "balloons", "stationery"]
    #categories = ["furniture"]  #TESTING

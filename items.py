@@ -4,10 +4,11 @@ import ast
 import collections
 import glob
 import pickle
+import os
 
 def items():
-   csv_path = "csvs\\"
-   pickle_path = "pickles\\"
+   csv_path = "csvs"+os.sep
+   pickle_path = "pickles"+os.sep
 
    files = glob.glob(csv_path+"*.csv")
    for f in files:

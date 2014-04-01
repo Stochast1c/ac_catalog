@@ -12,12 +12,13 @@ import pickle
 import numpy as np
 import ast
 import glob
+import os
 
 ########################################################################
-pickle_path = "pickles\\"  #windows only, sorry I like organization
+pickle_path = "pickles"+os.sep
 
 files = glob.glob(pickle_path+"*.pickle")
-filenames = [f.replace(pickle_path,'') for f in files]     #get rid of .pickle
+filenames = [f.replace(pickle_path,'') for f in files]     #get rid of pickles/
 filenames = [f.replace('.pickle','') for f in filenames]     #get rid of .pickle
 
 class MyTree(wx.TreeCtrl):
