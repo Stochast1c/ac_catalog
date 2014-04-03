@@ -45,7 +45,14 @@ class MyTree(wx.TreeCtrl):
       for f in filenames:
          with open(pickle_path+f+".pickle", 'rb') as handle:
             dict, unique_dict = pickle.loads(handle.read())
-         node[f] = self.AppendItem(root, f)
+            
+         #Find #items not cataloged
+         total_items = len(dict["cataloged"])
+         items_cataloged = np.sum(np.core.defchararray.count(dict["cataloged"], "True"))   #gives an array of 1(if True) or 0(if False), then sum to get total cataloged
+         catalog_remaining = total_items - items_cataloged
+         
+         node[f] = self.AppendItem(root, f+" ("+str(catalog_remaining)+")")
+         
          for k,values in unique_dict.iteritems():
             category[f] = self.AppendItem(node[f], k)
             for v in values:
@@ -131,8 +138,10 @@ class MyFrame(wx.Frame):
          This is somewhat hardcoded in"""
       
       for p in pieces:        #find what item list that was selected
+         p = p.split("(")[0].strip()   #split by (, corresponds to item remaining to catalog
          if p in filenames:
             self.item_list = p
+
             
       with open(pickle_path+self.item_list+".pickle", 'rb') as handle:
          self.dict, self.unique_dict = pickle.loads(handle.read())
