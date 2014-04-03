@@ -9,6 +9,5 @@ Red items are items that cannot be reordered.  Checking an item will automatical
 Required python libraries:
    wxpython
    numpy
-   glob
    requests (if you want to get an updated item list)
    readcol  (if you want to get an updated item list)
