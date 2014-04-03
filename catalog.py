@@ -5,7 +5,6 @@
       add cataloged category
       add reorderable category
       add alphabetical category (break into a,b,c sub categories.)
-      ****show remaining number of items
       add sort by ingame sorting (art, fish, etc.)
       add super item categories, clothing -> accesories, hats, shoes, socks, etc.
 """
@@ -69,6 +68,7 @@ class MyFrame(wx.Frame):
       self.dict = {}
       self.unique_dict = {}
       self.item_list = ""
+      self.item = ""
       
 
       wx.Frame.__init__(self, parent, id, title,
@@ -124,11 +124,13 @@ class MyFrame(wx.Frame):
       
       
       pieces = []
-      item =  event.GetItem()
-      while self.tree.GetItemParent(item):
-         piece = self.tree.GetItemText(item)
+      
+      self.item =  event.GetItem()     #need this to dynamically update tree
+      selected_item = self.item
+      while self.tree.GetItemParent(selected_item):
+         piece = self.tree.GetItemText(selected_item)
          pieces.insert(0, piece)
-         item = self.tree.GetItemParent(item)
+         selected_item = self.tree.GetItemParent(selected_item)
 
       item_cat = ''
       item_indiv_cat = ''
@@ -205,7 +207,7 @@ class MyFrame(wx.Frame):
       isChecked = sender.GetValue()
       name = sender.GetLabel()
       
-      name = name.split(":")[0]     #temporary until I fix display
+      name = name.split(":")[0]     #for when clicked on category
       
       item_index = np.where(self.dict["name"]==name)
  
@@ -214,6 +216,21 @@ class MyFrame(wx.Frame):
       else:
          self.dict["cataloged"][item_index] = False
          
+      self.updateTree()
+
+   def updateTree(self):   #update text on tree
+      total_items = len(self.dict["cataloged"])
+      items_cataloged = np.sum(np.core.defchararray.count(self.dict["cataloged"], "True"))   #gives an array of 1(if True) or 0(if False), then sum to get total cataloged
+      catalog_remaining = total_items - items_cataloged
+      
+      while self.tree.GetItemParent(self.item):       #get the top parent, only want item numbers there   EVENTUALLY, add this for all tree items so this code would be useless then
+         prev_item = self.item
+         self.item = self.tree.GetItemParent(self.item)
+         
+      self.item = prev_item   #error when not setting self.item back to the correct item
+      
+      tree_selection = self.tree.GetItemText(self.item).split("(")[0].strip()    
+      self.tree.SetItemText(self.item, tree_selection+" ("+str(catalog_remaining)+")")    #update item text to correct number cataloged
          
    def saveDict(self):
       if self.item_list != "":      #to stop it trying to save when first running program
