@@ -1,10 +1,21 @@
+"""Stars indicate priority"""
+
 """TODO
-      sort unique dict values (currently sorted by item name)
+      sort unique_dict values, the indiv_cat values (currently sorted by item name)
       add cataloged category
       add reorderable category
       add alphabetical category (break into a,b,c sub categories.)
-      show remaining number of items
+      ****show remaining number of items
+      add sort by ingame sorting (art, fish, etc.)
+      add super item categories, clothing -> accesories, hats, shoes, socks, etc.
 """
+
+"""BUGS
+      items with stupid characters (vowels with accents) display incorrectly
+      *items with these characters also break saving the entire list
+      
+      Program is slow when changing to categories with a large amount of items
+"""      
 
 import wx
 import wx.lib.scrolledpanel as scrolled
