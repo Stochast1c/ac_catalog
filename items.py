@@ -24,7 +24,7 @@ def items():
             if unique_dict[k] == ['-']:      #if the only value is -, then that is not something useful to sort by
                unique_dict.pop(k, None)      
          
-      with open(pickle_path+f[:-3]+"pickle", 'wb') as handle:
+      with open(pickle_path+f[len(csv_path):-3]+"pickle", 'wb') as handle:
          pickle.dump((collections.OrderedDict(sorted(dict.items())), collections.OrderedDict(sorted(unique_dict.items()))), handle)     #depositing dict by pickle, lazy and this is fast
    
    #return collections.OrderedDict(sorted(dict.items())), collections.OrderedDict(sorted(unique_dict.items()))
