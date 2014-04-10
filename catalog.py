@@ -112,7 +112,7 @@ class MyFrame(wx.Frame):
       self.rightPanel.SetupScrolling()
       self.rightPanel.Layout()
       # Put the left and right panes into the split window
-      self.splitter.SplitVertically(leftPanel, self.rightPanel)
+      self.splitter.SplitVertically(leftPanel, self.rightPanel, sashPosition=200)  #Added sash size, different computers would make the default size 0
       # Create the window in the centre of the screen
       self.Centre()
 
