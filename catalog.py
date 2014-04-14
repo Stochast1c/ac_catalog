@@ -1,6 +1,7 @@
 """Stars indicate priority"""
 
 """TODO
+      ****SAVE ON EXIT****
       sort unique_dict values, the indiv_cat values (currently sorted by item name)
       add cataloged category
       add reorderable category
@@ -10,22 +11,20 @@
 """
 
 """BUGS
-      items with stupid characters (vowels with accents) display incorrectly
-      *items with these characters also break saving the entire list
-      
       Program is slow when changing to categories with a large amount of items
 """      
 
 import wx
 import wx.lib.scrolledpanel as scrolled
-import pickle
-import numpy as np
-import ast
-import glob
-import os
+import pickle           #how the catalogs are stored, fastest method I can think of
+import numpy as np      #used for arrays from readcol and items remaining counter
+import ast              #convert string trues to bool trues
+import glob          
+import os               #so this will work on all os, only for directory sep
+
 
 ########################################################################
-pickle_path = "pickles"+os.sep
+pickle_path = "pickles"+os.sep         #os agnostic directory separator
 
 files = glob.glob(pickle_path+"*.pickle")
 filenames = [f.replace(pickle_path,'') for f in files]     #get rid of pickles/
@@ -53,9 +52,9 @@ class MyTree(wx.TreeCtrl):
          node[f] = self.AppendItem(root, f+" ("+str(catalog_remaining)+")")
          
          for k,values in unique_dict.iteritems():
-            category[f] = self.AppendItem(node[f], k)
+            category[f] = self.AppendItem(node[f], k.decode('utf-8'))   #may have non ascii characters
             for v in values:
-               self.AppendItem(category[f],v)
+               self.AppendItem(category[f],v.decode('utf-8'))
             
 class MyFrame(wx.Frame):
    '''Our customized window class
@@ -147,15 +146,16 @@ class MyFrame(wx.Frame):
             
       with open(pickle_path+self.item_list+".pickle", 'rb') as handle:
          self.dict, self.unique_dict = pickle.loads(handle.read())
-            
+         
       for p in pieces:        
          if p in self.dict.keys():
             item_cat = p
       
       if item_cat != '':      #if item_cat is none, then the dict call would break
          for p in pieces:
-            if p in self.unique_dict[item_cat]:
-               item_indiv_cat = p         
+            if p.encode('utf-8') in self.unique_dict[item_cat]:      #grabs a unicode string, must compare against an non-unicode one
+               item_indiv_cat = p
+
       
       self.DisplayItems(item_cat, item_indiv_cat)
         
@@ -189,17 +189,20 @@ class MyFrame(wx.Frame):
 
          self.number_of_buttons = 0  
       
-   def displayWidget(self, item_cat, item_indiv_cat):  
+   def displayWidget(self, item_cat, item_indiv_cat):
+      """
+         All strings here are converted to unicode, may contain special characters that don't display correctly
+      """   
       if item_cat == '':   #topmost selection, i.e. just the item list
          for j in range(len(self.dict["name"])):        #loop through all items in dict, name key just so I can find the length of the list in the dict, I want to print all items in the list
-            self.addWidget(self.dict["name"][j],ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name, cataloged, reorderable
+            self.addWidget(self.dict["name"][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name, cataloged, reorderable
       if item_cat != '' and item_indiv_cat == '':
          for j in range(len(self.dict["name"])):        
-            self.addWidget(self.dict["name"][j]+": "+self.dict[item_cat][j],ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name:category, cataloged, reorderable
+            self.addWidget(self.dict["name"][j].decode('UTF-8')+": "+self.dict[item_cat][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name:category, cataloged, reorderable
       if item_indiv_cat != '':
          for j in range(len(self.dict[item_cat])):        #loop through all items in dict, dict has keys of the categories and values for each item
-            if self.dict[item_cat][j] == item_indiv_cat:               #display only items that have this category
-               self.addWidget(self.dict["name"][j],ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j])) 
+            if self.dict[item_cat][j].decode('UTF-8') == item_indiv_cat:               #display only items that have this category
+               self.addWidget(self.dict["name"][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j])) 
       self.rightPanel.Layout()
    
    def checked(self,e):
@@ -208,8 +211,9 @@ class MyFrame(wx.Frame):
       name = sender.GetLabel()
       
       name = name.split(":")[0]     #for when clicked on category
+      name = name.encode('utf-8')
       
-      item_index = np.where(self.dict["name"]==name)
+      item_index = [i for i, elem in enumerate(self.dict["name"]) if name in elem]   #find index where name is in the array
  
       if isChecked:
          self.dict["cataloged"][item_index] = True
@@ -239,18 +243,17 @@ class MyFrame(wx.Frame):
 
 
 class MyApp(wx.App):
-    '''Our application class
-    '''
-    def OnInit(self):
-        '''Initialize by creating the split window with the tree
-        '''
-        frame = MyFrame(None, -1, 'treectrl.py')
-        frame.Layout()
-        frame.Show(True)
-        self.SetTopWindow(frame)
-        return True
+   '''Our application class
+   '''
+   def OnInit(self):
+      '''Initialize by creating the split window with the tree
+      '''
+      frame = MyFrame(None, -1, 'treectrl.py')
+      frame.Layout()
+      frame.Show(True)
+      self.SetTopWindow(frame)
+      return True 
 
 if __name__ == '__main__':
     app = MyApp(0)
     app.MainLoop()
-  
