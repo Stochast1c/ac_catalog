@@ -29,6 +29,7 @@ pickle_path = "pickles"+os.sep         #os agnostic directory separator
 files = glob.glob(pickle_path+"*.pickle")
 filenames = [f.replace(pickle_path,'') for f in files]     #get rid of pickles/
 filenames = [f.replace('.pickle','') for f in filenames]     #get rid of .pickle
+filenames = sorted(filenames)
 
 class MyTree(wx.TreeCtrl):
    """Our customized TreeCtrl class
