@@ -14,6 +14,10 @@ def items():
    for f in files:
       dict = readcol(f,asdict=True,fsep="`")
       dict.pop("\n", None)    #for some reason readcol grabs the newline character
+
+      for k in dict.keys():
+         if "\n" in k:
+            dict[k.rstrip()] = dict.pop(k)
       
       unique_dict = {}
       key_list = ["name","Sells For","Purchase Price","reorderable","cataloged"]    #keys that aren't useful to sort by
