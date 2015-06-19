@@ -44,7 +44,8 @@ class MyTree(wx.TreeCtrl):
       for f in filenames:
          with open(pickle_path+f+".pickle", 'rb') as handle:
             dict, unique_dict = pickle.loads(handle.read())
-            
+         
+         
          #Find #items not cataloged
          total_items = len(dict["cataloged"])
          items_cataloged = np.sum(np.core.defchararray.count(dict["cataloged"], "True"))   #gives an array of 1(if True) or 0(if False), then sum to get total cataloged
@@ -56,7 +57,8 @@ class MyTree(wx.TreeCtrl):
             category[f] = self.AppendItem(node[f], k.decode('utf-8'))   #may have non ascii characters
             for v in values:
                self.AppendItem(category[f],v.decode('utf-8'))
-            
+
+  
 class MyFrame(wx.Frame):
    '''Our customized window class
    '''
@@ -147,11 +149,12 @@ class MyFrame(wx.Frame):
             
       with open(pickle_path+self.item_list+".pickle", 'rb') as handle:
          self.dict, self.unique_dict = pickle.loads(handle.read())
+      
          
       for p in pieces:        
          if p in self.dict.keys():
             item_cat = p
-      
+     
       if item_cat != '':      #if item_cat is none, then the dict call would break
          for p in pieces:
             if p.encode('utf-8') in self.unique_dict[item_cat]:      #grabs a unicode string, must compare against an non-unicode one
@@ -198,8 +201,13 @@ class MyFrame(wx.Frame):
          for j in range(len(self.dict["name"])):        #loop through all items in dict, name key just so I can find the length of the list in the dict, I want to print all items in the list
             self.addWidget(self.dict["name"][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name, cataloged, reorderable
       if item_cat != '' and item_indiv_cat == '':
-         for j in range(len(self.dict["name"])):        
-            self.addWidget(self.dict["name"][j].decode('UTF-8')+": "+self.dict[item_cat][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name:category, cataloged, reorderable
+         if item_cat == "cataloged":
+            for j in range(len(self.dict["name"])):        #loop through all items in dict, name key just so I can find the length of the list in the dict, I want to print all items in the list
+               if ast.literal_eval(self.dict["cataloged"][j]) == False:
+                  self.addWidget(self.dict["name"][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name, cataloged, reorderable
+         else:
+            for j in range(len(self.dict["name"])):        
+               self.addWidget(self.dict["name"][j].decode('UTF-8')+": "+self.dict[item_cat][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name:category, cataloged, reorderable
       if item_indiv_cat != '':
          for j in range(len(self.dict[item_cat])):        #loop through all items in dict, dict has keys of the categories and values for each item
             if self.dict[item_cat][j].decode('UTF-8') == item_indiv_cat:               #display only items that have this category
@@ -238,6 +246,11 @@ class MyFrame(wx.Frame):
       self.tree.SetItemText(self.item, tree_selection+" ("+str(catalog_remaining)+")")    #update item text to correct number cataloged
          
    def saveDict(self):
+
+      """   #Adding a new category that I would like to organize by without rewriting things
+      if "cataloged" not in self.unique_dict.keys():
+            self.unique_dict["cataloged"] = ["True", "False"]
+      """
       if self.item_list != "":      #to stop it trying to save when first running program
          with open(pickle_path+self.item_list+".pickle", 'wb') as handle:
             pickle.dump((self.dict,self.unique_dict), handle)     #depositing dict by pickle, lazy and this is fast
