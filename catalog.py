@@ -3,7 +3,6 @@
 """TODO
       ****SAVE ON EXIT****
       sort unique_dict values, the indiv_cat values (currently sorted by item name)
-      add cataloged category
       add reorderable category
       add alphabetical category (break into a,b,c sub categories.)
       add sort by ingame sorting (art, fish, etc.)
@@ -49,9 +48,9 @@ class MyTree(wx.TreeCtrl):
          #Find #items not cataloged
          total_items = len(dict["cataloged"])
          items_cataloged = np.sum(np.core.defchararray.count(dict["cataloged"], "True"))   #gives an array of 1(if True) or 0(if False), then sum to get total cataloged
-         catalog_remaining = total_items - items_cataloged
+         catalog_remaining = total_items - items_cataloged  #obsolete right now, leaving for future
          
-         node[f] = self.AppendItem(root, f+" ("+str(catalog_remaining)+")")
+         node[f] = self.AppendItem(root, f+" ("+str(items_cataloged)+"/"+str(total_items)+")")
          
          for k,values in unique_dict.iteritems():
             category[f] = self.AppendItem(node[f], k.decode('utf-8'))   #may have non ascii characters
@@ -234,7 +233,7 @@ class MyFrame(wx.Frame):
    def updateTree(self):   #update text on tree
       total_items = len(self.dict["cataloged"])
       items_cataloged = np.sum(np.core.defchararray.count(self.dict["cataloged"], "True"))   #gives an array of 1(if True) or 0(if False), then sum to get total cataloged
-      catalog_remaining = total_items - items_cataloged
+      catalog_remaining = total_items - items_cataloged  #obsolete right now, leaving for future needs
       
       while self.tree.GetItemParent(self.item):       #get the top parent, only want item numbers there   EVENTUALLY, add this for all tree items so this code would be useless then
          prev_item = self.item
@@ -243,7 +242,7 @@ class MyFrame(wx.Frame):
       self.item = prev_item   #error when not setting self.item back to the correct item
       
       tree_selection = self.tree.GetItemText(self.item).split("(")[0].strip()    
-      self.tree.SetItemText(self.item, tree_selection+" ("+str(catalog_remaining)+")")    #update item text to correct number cataloged
+      self.tree.SetItemText(self.item, tree_selection+" ("+str(items_cataloged)+"/"+str(total_items)+")")    #update item text to correct number cataloged
          
    def saveDict(self):
 
