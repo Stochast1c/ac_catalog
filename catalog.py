@@ -42,7 +42,7 @@ class MyTree(wx.TreeCtrl):
       node = {}
       category = {}
       for f in filenames:
-         with open(pickle_path+f+".pickle", 'rb') as handle:
+         with open(pickle_path+f+".pickle", 'r') as handle:
             dict, unique_dict = pickle.loads(handle.read())
          
          
@@ -147,7 +147,7 @@ class MyFrame(wx.Frame):
             self.item_list = p
 
             
-      with open(pickle_path+self.item_list+".pickle", 'rb') as handle:
+      with open(pickle_path+self.item_list+".pickle", 'r') as handle:
          self.dict, self.unique_dict = pickle.loads(handle.read())
       
          
@@ -252,7 +252,7 @@ class MyFrame(wx.Frame):
             self.unique_dict["cataloged"] = ["True", "False"]
       
       if self.item_list != "":      #to stop it trying to save when first running program
-         with open(pickle_path+self.item_list+".pickle", 'wb') as handle:
+         with open(pickle_path+self.item_list+".pickle", 'w') as handle:
             pickle.dump((self.dict,self.unique_dict), handle)     #depositing dict by pickle, lazy and this is fast
 
 
