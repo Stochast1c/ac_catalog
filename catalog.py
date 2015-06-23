@@ -246,10 +246,10 @@ class MyFrame(wx.Frame):
          
    def saveDict(self):
 
-      """   #Adding a new category that I would like to organize by without rewriting things
+      #Adding a new category that I would like to organize by without rewriting things
       if "cataloged" not in self.unique_dict.keys():
             self.unique_dict["cataloged"] = ["True", "False"]
-      """
+      
       if self.item_list != "":      #to stop it trying to save when first running program
          with open(pickle_path+self.item_list+".pickle", 'wb') as handle:
             pickle.dump((self.dict,self.unique_dict), handle)     #depositing dict by pickle, lazy and this is fast
