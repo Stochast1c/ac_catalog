@@ -23,7 +23,8 @@ import os               #so this will work on all os, only for directory sep
 
 
 ########################################################################
-pickle_path = "pickles"+os.sep         #os agnostic directory separator
+catalog_dir = ""    #option to allow catalog files in a different directory, e.g. dropbox
+pickle_path = catalog_dir+"pickles"+os.sep         #os agnostic directory separator
 
 files = glob.glob(pickle_path+"*.pickle")
 filenames = [f.replace(pickle_path,'') for f in files]     #get rid of pickles/
