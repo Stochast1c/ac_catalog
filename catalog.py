@@ -20,6 +20,7 @@ import numpy as np      #used for arrays from readcol and items remaining counte
 import ast              #convert string trues to bool trues
 import glob          
 import os               #so this will work on all os, only for directory sep
+import time             #used for most recent checked
 
 
 ########################################################################
@@ -45,7 +46,6 @@ class MyTree(wx.TreeCtrl):
          with open(pickle_path+f+".pickle", 'r') as handle:
             dict, unique_dict = pickle.loads(handle.read())
          
-         
          #Find #items not cataloged
          total_items = len(dict["cataloged"])
          items_cataloged = np.sum(np.core.defchararray.count(dict["cataloged"], "True"))   #gives an array of 1(if True) or 0(if False), then sum to get total cataloged
@@ -57,6 +57,9 @@ class MyTree(wx.TreeCtrl):
             category[f] = self.AppendItem(node[f], k.decode('utf-8'))   #may have non ascii characters
             for v in values:
                self.AppendItem(category[f],v.decode('utf-8'))
+
+         category[f] = self.AppendItem(node[f], "Recently Modified")  #separate since I don't want subcategories
+
 
   
 class MyFrame(wx.Frame):
@@ -151,16 +154,15 @@ class MyFrame(wx.Frame):
          self.dict, self.unique_dict = pickle.loads(handle.read())
       
          
-      for p in pieces:        
+      for p in pieces:
          if p in self.dict.keys():
             item_cat = p
-     
-      if item_cat != '':      #if item_cat is none, then the dict call would break
+                                                                  #not Recently Modified since no subcategories for it (not even in unique_dict which would break if run) 
+      if item_cat != '' and item_cat != "Recently Modified":      #if item_cat is none, then the dict call would break
          for p in pieces:
             if p.encode('utf-8') in self.unique_dict[item_cat]:      #grabs a unicode string, must compare against an non-unicode one
                item_indiv_cat = p
 
-      
       self.DisplayItems(item_cat, item_indiv_cat)
         
    def DisplayItems(self, item_cat, item_indiv_cat):
@@ -200,14 +202,20 @@ class MyFrame(wx.Frame):
       if item_cat == '':   #topmost selection, i.e. just the item list
          for j in range(len(self.dict["name"])):        #loop through all items in dict, name key just so I can find the length of the list in the dict, I want to print all items in the list
             self.addWidget(self.dict["name"][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name, cataloged, reorderable
-      if item_cat != '' and item_indiv_cat == '':
-         if item_cat == "cataloged":      #want optained from as extra info
+      
+      if item_cat != '' and item_indiv_cat == '':     #first subcategory 
+         if item_cat == "Recently Modified":     #this requires a loop and different output and error when trying to decode name???
+            sorted_index = np.argsort(self.dict["Recently Modified"])[::-1]    #want most recently modified not oldest, argsort since the other lists need to be sorted as well
+            for j in range(20):  #only return the 20 most recently modified
+               self.addWidget(self.dict["name"][sorted_index[j]],ast.literal_eval(self.dict["cataloged"][sorted_index[j]]),ast.literal_eval(self.dict["reorderable"][sorted_index[j]]))   
+         elif item_cat == "cataloged":      #want optained from as extra info
             for j in range(len(self.dict["name"])):        #loop through all items in dict, name key just so I can find the length of the list in the dict, I want to print all items in the list
                if ast.literal_eval(self.dict["cataloged"][j]) == False:
                   self.addWidget(self.dict["name"][j].decode('UTF-8')+": "+self.dict["Obtained From"][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name, cataloged, reorderable
          else:
             for j in range(len(self.dict["name"])):        
                self.addWidget(self.dict["name"][j].decode('UTF-8')+": "+self.dict[item_cat][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name:category, cataloged, reorderable
+      
       if item_indiv_cat != '':
          for j in range(len(self.dict[item_cat])):        #loop through all items in dict, dict has keys of the categories and values for each item
             if self.dict[item_cat][j].decode('UTF-8') == item_indiv_cat:               #display only items that have this category
@@ -228,6 +236,8 @@ class MyFrame(wx.Frame):
          self.dict["cataloged"][item_index] = True
       else:
          self.dict["cataloged"][item_index] = False
+
+      self.dict["Recently Modified"][item_index] = time.time()    #to determine last changed, consider when formating output to convert this to human understandable time
          
       self.updateTree()
 
@@ -248,13 +258,14 @@ class MyFrame(wx.Frame):
    def saveDict(self):
 
       #Adding a new category that I would like to organize by without rewriting things
-      if "cataloged" not in self.unique_dict.keys():
-            self.unique_dict["cataloged"] = ["True", "False"]
-      
+            
       if self.item_list != "":      #to stop it trying to save when first running program
+         if "cataloged" not in self.unique_dict.keys():
+            self.unique_dict["cataloged"] = ["True", "False"]
+         if "Recently Modified" not in self.dict.keys():
+            self.dict["Recently Modified"] = np.zeros(len(self.dict["name"]))
          with open(pickle_path+self.item_list+".pickle", 'w') as handle:
             pickle.dump((self.dict,self.unique_dict), handle)     #depositing dict by pickle, lazy and this is fast
-
 
 class MyApp(wx.App):
    '''Our application class
