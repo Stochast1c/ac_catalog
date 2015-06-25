@@ -206,7 +206,13 @@ class MyFrame(wx.Frame):
       if item_cat != '' and item_indiv_cat == '':     #first subcategory 
          if item_cat == "Recently Modified":     #this requires a loop and different output and error when trying to decode name???
             sorted_index = np.argsort(self.dict["Recently Modified"])[::-1]    #want most recently modified not oldest, argsort since the other lists need to be sorted as well
-            for j in range(20):  #only return the 20 most recently modified
+            
+            if len(self.dict["name"]) < 20:     #to prevent displaying more items than there actually are
+               loop_number = len(self.dict["name"])
+            else:
+               loop_number = 20
+            
+            for j in range(loop_number):  #only return the 20 most recently modified
                self.addWidget(self.dict["name"][sorted_index[j]],ast.literal_eval(self.dict["cataloged"][sorted_index[j]]),ast.literal_eval(self.dict["reorderable"][sorted_index[j]]))   
          elif item_cat == "cataloged":      #want optained from as extra info
             for j in range(len(self.dict["name"])):        #loop through all items in dict, name key just so I can find the length of the list in the dict, I want to print all items in the list
