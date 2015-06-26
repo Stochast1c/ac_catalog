@@ -13,6 +13,8 @@
       **********URGENT*********
       items with the same name parts (range and deluxe range, matryoska and snowman maytroska) get checked/unchecked at the same time when only checking one item, look at item checking function, FIX IMMEDIATELY
 
+      bug occurs when checking off an item with a singular name that makes up part of other items, e.g. fan also checks fancy, wall fan, fan palm, etc.  i.e. "fan" matches *fan*
+
       Program is slow when changing to categories with a large amount of items
 """      
 
@@ -238,7 +240,8 @@ class MyFrame(wx.Frame):
       
       name = name.split(":")[0]     #for when clicked on category
       name = name.encode('utf-8')
-      
+     
+      #THIS IS THE PROBLEM LINE 
       item_index = [i for i, elem in enumerate(self.dict["name"]) if name in elem]   #find index where name is in the array
  
       if isChecked:
