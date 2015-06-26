@@ -10,6 +10,9 @@
 """
 
 """BUGS
+      **********URGENT*********
+      items with the same name parts (range and deluxe range, matryoska and snowman maytroska) get checked/unchecked at the same time when only checking one item, look at item checking function, FIX IMMEDIATELY
+
       Program is slow when changing to categories with a large amount of items
 """      
 
