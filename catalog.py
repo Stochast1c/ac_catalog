@@ -242,8 +242,7 @@ class MyFrame(wx.Frame):
       name = name.encode('utf-8')
      
       #THIS IS THE PROBLEM LINE 
-      item_index = [i for i, elem in enumerate(self.dict["name"]) if name in elem]   #find index where name is in the array
- 
+      item_index = np.where(name == self.dict["name"]) 
       if isChecked:
          self.dict["cataloged"][item_index] = True
       else:
