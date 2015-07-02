@@ -2,7 +2,6 @@
 
 """TODO
       ****SAVE ON EXIT****
-      sort unique_dict values, the indiv_cat values (currently sorted by item name)
       add reorderable category
       add alphabetical category (break into a,b,c sub categories.)
       add sort by ingame sorting (art, fish, etc.)
@@ -52,10 +51,10 @@ class MyTree(wx.TreeCtrl):
          catalog_remaining = total_items - items_cataloged  #obsolete right now, leaving for future
          
          node[f] = self.AppendItem(root, f+" ("+str(items_cataloged)+"/"+str(total_items)+")")
-         
+            
          for k,values in unique_dict.iteritems():
             category[f] = self.AppendItem(node[f], k.decode('utf-8'))   #may have non ascii characters
-            for v in values:
+            for v in sorted(values):      #to alphebetize the subcategories
                self.AppendItem(category[f],v.decode('utf-8'))
 
          category[f] = self.AppendItem(node[f], "Recently Modified")  #separate since I don't want subcategories
