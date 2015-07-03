@@ -197,35 +197,47 @@ class MyFrame(wx.Frame):
    def displayWidget(self, item_cat, item_indiv_cat):
       """
          All strings here are converted to unicode, may contain special characters that don't display correctly
-      """   
-      if item_cat == '':   #topmost selection, i.e. just the item list
-         for j in range(len(self.dict["name"])):        #loop through all items in dict, name key just so I can find the length of the list in the dict, I want to print all items in the list
+      """  
+      num_items = len(self.dict["name"])  #all items in the category
+
+      #Item List 
+      if item_cat == '':
+         for j in range(num_items):        
             self.addWidget(self.dict["name"][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name, cataloged, reorderable
       
+      #Subcategory
       if item_cat != '' and item_indiv_cat == '':     #first subcategory 
-         if item_cat == "Recently Modified":     #this requires a loop and different output and error when trying to decode name???
+         
+         #Recently Modified Items
+         if item_cat == "Recently Modified":     #this requires a loop and different output
             sorted_index = np.argsort(self.dict["Recently Modified"])[::-1]    #want most recently modified not oldest, argsort since the other lists need to be sorted as well
             
-            if len(self.dict["name"]) < 20:     #to prevent displaying more items than there actually are
-               loop_number = len(self.dict["name"])
+            if num_items  < 20:     #to prevent displaying more items than there actually are
+               loop_number = num_items 
             else:
                loop_number = 20
             
             for j in range(loop_number):  #only return the 20 most recently modified
-               self.addWidget(self.dict["name"][sorted_index[j]],ast.literal_eval(self.dict["cataloged"][sorted_index[j]]),ast.literal_eval(self.dict["reorderable"][sorted_index[j]]))   
-         elif item_cat == "cataloged":      #want optained from as extra info
-            for j in range(len(self.dict["name"])):        #loop through all items in dict, name key just so I can find the length of the list in the dict, I want to print all items in the list
+               self.addWidget(self.dict["name"][sorted_index[j]],ast.literal_eval(self.dict["cataloged"][sorted_index[j]]),ast.literal_eval(self.dict["reorderable"][sorted_index[j]]))   #name, cataloged, reorderable
+         
+         #Cataloged Items 
+         elif item_cat == "cataloged":      #want to show non-cataloged items for the subcategory listing
+            for j in range(num_items):
                if ast.literal_eval(self.dict["cataloged"][j]) == False:
-                  self.addWidget(self.dict["name"][j].decode('UTF-8')+": "+self.dict["Obtained From"][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name, cataloged, reorderable
+                  self.addWidget(self.dict["name"][j].decode('UTF-8')+": "+self.dict["Obtained From"][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name:obtained, cataloged, reorderable
+         
+         #All other subcategories
          else:
-            for j in range(len(self.dict["name"])):        
+            for j in range(num_items):        
                self.addWidget(self.dict["name"][j].decode('UTF-8')+": "+self.dict[item_cat][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j]))   #name:category, cataloged, reorderable
-      
+     
+      #Subsubcategories 
       if item_indiv_cat != '':
-         for j in range(len(self.dict[item_cat])):        #loop through all items in dict, dict has keys of the categories and values for each item
+         for j in range(num_items):        
             if self.dict[item_cat][j].decode('UTF-8') == item_indiv_cat:               #display only items that have this category
                self.addWidget(self.dict["name"][j].decode('UTF-8'),ast.literal_eval(self.dict["cataloged"][j]),ast.literal_eval(self.dict["reorderable"][j])) 
-      self.rightPanel.Layout()
+      
+      self.rightPanel.Layout()   #format the right panel so the scrollbars get reset and the list resets back up to the top
    
    def checked(self,e):
       sender = e.GetEventObject()
@@ -244,7 +256,7 @@ class MyFrame(wx.Frame):
 
       self.dict["Recently Modified"][item_index] = time.time()    #to determine last changed, consider when formating output to convert this to human understandable time
          
-      self.updateTree()
+      self.updateTree()    #right now for updating number of items left to catalog, but allows for all tree manipulation after checking items
 
    def updateTree(self):   #update text on tree
       total_items = len(self.dict["cataloged"])
